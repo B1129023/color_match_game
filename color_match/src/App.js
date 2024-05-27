@@ -14,3 +14,19 @@ function App() {
 }
 
 export default App;
+
+
+
+// import React from 'react';
+// import './App.css';
+// import Othello from './Othello';
+
+// function App() {
+//   return (
+//     <div className="App">
+//       <Othello />
+//     </div>
+//   );
+// }
+
+// export default App;
