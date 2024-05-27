@@ -1,0 +1,127 @@
+.App-header {
+  background-color: #282c34; /* 標題列背景顏色 */
+  min-height: 10vh; /* 標題列最小高度 */
+  display: flex;
+  flex-direction: column; 
+  align-items: center; /* 對齊標題列內容 */
+  justify-content: center; 
+  font-size: calc(10px + 2vmin); /* 計算字體大小 */
+  color: white; /* 文字顏色 */
+}
+
+/* ---------------------------------------- */
+/* 新增及調整後內容 */
+.difficulty-labels {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.difficulty-label {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.difficulty-label:hover {
+  background-color: #0056b3;
+}
+
+.start_end {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 75vh;
+}
+
+.leaderboards {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 20px;
+}
+
+.leaderboard {
+  flex: 1;
+  margin: 0 10px;
+}
+
+.leaderboard ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.leaderboard h2 {
+  text-align: center;
+}
+
+ul.leaderboard {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  text-align: center; /* 使列表項居中 */
+}
+
+ul.leaderboard li {
+  display: inline-block;
+  width: 100%; /* 使每個列表項佔據整行 */
+  padding: 10px 0;
+}
+/* ---------------------------------------- */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif; /* 使用系統字體 */
+  background-color: lightcyan; /* 背景顏色 */
+}
+
+.container {
+  text-align: center;
+}
+
+input[type="text"],
+button {
+  margin: 10px;
+  padding: 10px 20px; /* 調整按鈕的內邊距 */
+  font-size: 18px; /* 增加字體大小 */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button {
+  background-color: #007bff; /* 按鈕背景顏色 */
+  color: #fff; /* 按鈕文字顏色 */
+}
+
+button:hover {
+  background-color: #0056b3; /* 滑鼠懸停時的按鈕背景顏色 */
+}
+
+h2 {
+  margin-top: 20px;
+  margin-bottom: 10px; /* 增加段落底部間距 */
+  font-size: 24px; /* 增加字體大小 */
+  color: #333; /* 文字顏色 */
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-over-message {
+  margin-top: 20px; /* 增加段落頂部間距 */
+  margin-bottom: 20px; /* 增加段落底部間距 */
+  font-size: 20px; /* 增加字體大小 */
+  color: #dc3545; /* 遊戲結束訊息文字顏色 */
+  font-weight: bold;
+}
