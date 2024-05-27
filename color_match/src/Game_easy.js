@@ -12,7 +12,7 @@ class Game_easy extends React.Component {
         <div style={{ backgroundColor: 'lightcyan', ...getPosition(20, 365, 570) }}></div>
         <div style={{ backgroundColor: targetColor, width: '80px', height: '80px' }}></div>
         <div style={{ backgroundColor: targetColor, ...getRandomPosition() }} onClick={() => handleBlockClick(targetColor)}></div>
-        <div style={{ backgroundColor: getRandomColor(), ...getRandomPosition() }} onClick={() => handleBlockClick()}></div>
+        
         <div style={{ backgroundColor: getRandomColor(), ...getRandomPosition() }} onClick={() => handleBlockClick()}></div>
       </div>
     );

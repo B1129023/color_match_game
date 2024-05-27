@@ -11,6 +11,32 @@
 
 /* ---------------------------------------- */
 /* 新增及調整後內容 */
+.leaderboard {
+  margin-bottom: 20px;
+}
+
+.leaderboard table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.leaderboard th,
+.leaderboard td {
+  border: 1px solid #000000;
+  padding: 8px;
+  text-align: left;
+}
+
+.leaderboard th {
+  background-color: #007bff;
+  color: white;
+}
+
+.leaderboard tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+
 .difficulty-labels {
   display: flex;
   justify-content: center;

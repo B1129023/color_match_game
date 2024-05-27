@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { db } from './firebaseConfig';
 import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
 // 分裝網頁顯示內容(新增內容)
-import Game_start from './Game_start';
-import Game_end from './Game_end';
-import Game_easy from './Game_easy';
-import Game_normal from './Game_normal';
-import Game_hard from './Game_hard';
+import GameStart from './Game_start';
+import GameEnd from './Game_end';
+import GameEasy from './Game_easy';
+import GameNormal from './Game_normal';
+import GameHard from './Game_hard';
 
 class Game extends Component {
   
@@ -27,12 +27,23 @@ class Game extends Component {
     this.existingPositions = [];
   }
 
-  // 在應用程序啟動時，呼叫resetScores()(新增內容)
+  // 在應用程序啟動時調用(新增內容)
   componentDidMount() { 
-    if (process.env.NODE_ENV === 'development') {
-      this.resetScores();
+    // 從本地存儲中加載排行榜數據
+    const storedLeaderboardEasy = localStorage.getItem('leaderboardEasy');
+    const storedLeaderboardNormal = localStorage.getItem('leaderboardNormal');
+    const storedLeaderboardHard = localStorage.getItem('leaderboardHard');
+    if (storedLeaderboardEasy) {
+      this.setState({ leaderboardEasy: JSON.parse(storedLeaderboardEasy) });
     }
-  }
+    if (storedLeaderboardNormal) {
+      this.setState({ leaderboardNormal: JSON.parse(storedLeaderboardNormal) });
+    }
+    if (storedLeaderboardHard) {
+      this.setState({ leaderboardHard: JSON.parse(storedLeaderboardHard) });
+    }
+  }  
+  
   // 重置排行榜數據(新增內容)
   resetScores = async () => {
     const allScoresSnapshot = await getDocs(collection(db, 'gameScores'));
@@ -62,17 +73,20 @@ class Game extends Component {
     const scoresQuery = query(collection(db, 'gameScores'), orderBy('score', 'desc'));
     const querySnapshot = await getDocs(scoresQuery);
     const allScores = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    
     const filteredScores = allScores.filter(score => score.difficulty === difficulty);
     const topScores = filteredScores.sort((a, b) => b.score - a.score).slice(0, 5);
-  
+
     if (difficulty === 'easy') {
       this.setState({ leaderboardEasy: topScores });
+      localStorage.setItem('leaderboardEasy', JSON.stringify(topScores)); // 保存到本地存儲
     } else if (difficulty === 'normal') {
       this.setState({ leaderboardNormal: topScores });
+      localStorage.setItem('leaderboardNormal', JSON.stringify(topScores)); // 保存到本地存儲
     } else if (difficulty === 'hard') {
       this.setState({ leaderboardHard: topScores });
+      localStorage.setItem('leaderboardHard', JSON.stringify(topScores)); // 保存到本地存儲
     }
+  
   
     if (allScores.length > 5) {
       const scoresToDelete = allScores.filter(score => !topScores.includes(score));
@@ -120,7 +134,8 @@ class Game extends Component {
   endGame = () => {
     this.setState({ gameOver: true });
     clearInterval(this.timerID);
-    this.saveScore();
+    this.saveScore(); // 先保存分數
+    this.updateLeaderboard(this.state.difficulty); // 只更新當前難度的排行榜
   }
 
   restartGame = () => {
@@ -148,13 +163,13 @@ class Game extends Component {
     const blockSize = 80; // 方塊大小
     const edge_length = 490; // 方塊邊長(根據需要調整)
     
-    let top, left;
     let isValidPosition = false;
+    let top, left;
 
-    while (!isValidPosition) {
+    const generatePosition = () => {
       top = Math.floor(Math.random() * (edge_length)) + 20;
       left = Math.floor(Math.random() * (edge_length)) + 365;
-
+  
       isValidPosition = this.existingPositions.every(position => {
         const { top: existingTop, left: existingLeft } = position;
         return (
@@ -164,10 +179,16 @@ class Game extends Component {
           left > existingLeft + blockSize
         );
       });
+    };
+  
+    generatePosition();
+  
+    while (!isValidPosition) {
+      generatePosition();
     }
-
+  
     this.existingPositions.push({ top, left });
-
+  
     return {
       position: 'absolute',
       top: `${top}px`,
@@ -209,12 +230,12 @@ class Game extends Component {
     const { gameStarted, targetColor, gameOver, score, timeLeft, playerName, difficulty, leaderboardEasy, leaderboardNormal, leaderboardHard } = this.state;
     
     // 根據難度選擇不同的遊戲組件(新增內容)
-    let leaderboard;
+    
     let gameComponent;
     if (gameStarted && !gameOver) {
       if(this.state.difficulty === 'easy') {
         gameComponent = (
-          <Game_easy
+          <GameEasy
           gameStarted={gameStarted}
           gameOver={gameOver}
           targetColor={targetColor}
@@ -228,7 +249,7 @@ class Game extends Component {
         );
       }else if(this.state.difficulty === 'normal') {
           gameComponent = (
-            <Game_normal
+            <GameNormal
             gameStarted={gameStarted}
             gameOver={gameOver}
             targetColor={targetColor}
@@ -242,7 +263,7 @@ class Game extends Component {
           );
       }else if(this.state.difficulty === 'hard') {
           gameComponent = (
-            <Game_hard
+            <GameHard
             gameStarted={gameStarted}
             gameOver={gameOver}
             targetColor={targetColor}
@@ -256,7 +277,7 @@ class Game extends Component {
           );
       }
     }
-
+    let leaderboard;
     // 根據難度選擇不同的排行榜(新增內容)
     if (difficulty === 'easy') {
       leaderboard = leaderboardEasy;
@@ -273,7 +294,7 @@ class Game extends Component {
       <div>
         {/*開始頁面(調整後)*/}
         {gameStarted === false && (
-          <Game_start 
+          <GameStart 
           playerName={playerName} 
           handleNameChange={this.handleNameChange} 
           startGame={this.startGame}
@@ -287,7 +308,7 @@ class Game extends Component {
         
         {/*結束頁面(調整後)*/}
         {gameOver && (
-          <Game_end
+          <GameEnd
           playerName={playerName}
           score={score}
           restartGame={this.restartGame}
