@@ -31,7 +31,7 @@ class EasyGame extends Component {
   saveScore = async () => {
     const { playerName, score, difficulty } = this.state;
     try {
-      await addDoc(collection(db, 'gameScores'), { playerName, score, difficulty });
+      await addDoc(collection(db, 'easy_gameScores'), { playerName, score, difficulty });
       this.updateLeaderboard(difficulty);
     } catch (error) {
       console.error('Error adding document: ', error);
@@ -40,7 +40,7 @@ class EasyGame extends Component {
 
   // 更新排行榜(調整後)
   updateLeaderboard = async (difficulty) => {
-    const scoresQuery = query(collection(db, 'gameScores'), orderBy('score', 'desc'));
+    const scoresQuery = query(collection(db, 'easy_gameScores'), orderBy('score', 'desc'));
     const querySnapshot = await getDocs(scoresQuery);
     const allScores = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     const filteredScores = allScores.filter(score => score.difficulty === difficulty);
@@ -60,7 +60,7 @@ class EasyGame extends Component {
     if (allScores.length > 5) {
       const scoresToDelete = allScores.filter(score => !topScores.includes(score));
       scoresToDelete.forEach(async (scoreDoc) => {
-        await deleteDoc(doc(db, 'gameScores', scoreDoc.id));
+        await deleteDoc(doc(db, 'easy_gameScores', scoreDoc.id));
       });
     }
   }

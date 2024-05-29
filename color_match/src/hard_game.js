@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { db } from './firebaseConfig';
 import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
 
-class HardGame extends Component {
+
+class EasyGame extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -12,17 +13,17 @@ class HardGame extends Component {
       gameOver: false,
       score: 0,
       timeLeft: 5, // 5秒倒數
-      leaderboardHard: [], // 修改为保存 hard 难度的排行榜数据
-      difficulty: 'hard', // 设置默认难度为 hard
+      leaderboardEasy: [],
+      difficulty: this.props.difficulty || 'easy', // 使用傳遞的難度
     };
     this.existingPositions = [];
   }
 
   componentDidMount() {
-    // 从本地存储中加载排行榜数据
-    const storedLeaderboardHard = localStorage.getItem('leaderboardHard');
-    if (storedLeaderboardHard) {
-      this.setState({ leaderboardHard: JSON.parse(storedLeaderboardHard) });
+    // 從本地存儲中加載排行榜數據
+    const storedLeaderboardEasy = localStorage.getItem('leaderboardEasy');
+    if (storedLeaderboardEasy) {
+      this.setState({ leaderboardEasy: JSON.parse(storedLeaderboardEasy) });
     }
   }
 
@@ -30,7 +31,7 @@ class HardGame extends Component {
   saveScore = async () => {
     const { playerName, score, difficulty } = this.state;
     try {
-      await addDoc(collection(db, 'gameScores'), { playerName, score, difficulty });
+      await addDoc(collection(db, 'hard_gameScores'), { playerName, score, difficulty });
       this.updateLeaderboard(difficulty);
     } catch (error) {
       console.error('Error adding document: ', error);
@@ -39,13 +40,19 @@ class HardGame extends Component {
 
   // 更新排行榜(調整後)
   updateLeaderboard = async (difficulty) => {
-    const scoresQuery = query(collection(db, 'gameScores'), orderBy('score', 'desc'));
+    const scoresQuery = query(collection(db, 'hard_gameScores'), orderBy('score', 'desc'));
     const querySnapshot = await getDocs(scoresQuery);
     const allScores = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     const filteredScores = allScores.filter(score => score.difficulty === difficulty);
     const topScores = filteredScores.sort((a, b) => b.score - a.score).slice(0, 5);
 
-    if (difficulty === 'hard') {
+    if (difficulty === 'easy') {
+      this.setState({ leaderboardEasy: topScores });
+      localStorage.setItem('leaderboardEasy', JSON.stringify(topScores)); // 保存到本地存儲
+    } else if (difficulty === 'normal') {
+      this.setState({ leaderboardNormal: topScores });
+      localStorage.setItem('leaderboardNormal', JSON.stringify(topScores)); // 保存到本地存儲
+    } else if (difficulty === 'hard') {
       this.setState({ leaderboardHard: topScores });
       localStorage.setItem('leaderboardHard', JSON.stringify(topScores)); // 保存到本地存儲
     }
@@ -53,7 +60,7 @@ class HardGame extends Component {
     if (allScores.length > 5) {
       const scoresToDelete = allScores.filter(score => !topScores.includes(score));
       scoresToDelete.forEach(async (scoreDoc) => {
-        await deleteDoc(doc(db, 'gameScores', scoreDoc.id));
+        await deleteDoc(doc(db, 'hard_gameScores', scoreDoc.id));
       });
     }
   }
@@ -70,6 +77,10 @@ class HardGame extends Component {
 
   handleNameChange = (event) => {
     this.setState({ playerName: event.target.value });
+  }
+
+  selectDifficulty = (difficulty) => {
+    this.setState({ difficulty });
   }
 
   startGame = () => {
@@ -104,7 +115,7 @@ class HardGame extends Component {
       gameOver: false,
       score: 0,
       timeLeft: 5, // 5秒倒數
-      difficulty: 'hard', // 重新設置難度
+      difficulty: 'easy', // 重新設置難度
     });
     this.existingPositions = [];
   }
@@ -183,7 +194,7 @@ class HardGame extends Component {
   }
 
   render() {
-    const { gameStarted, targetColor, gameOver, score, timeLeft, playerName, leaderboardHard } = this.state;
+    const { gameStarted, targetColor, gameOver, score, timeLeft, playerName, leaderboardEasy } = this.state;
     return (
       <div>
         {gameStarted === false && (
@@ -236,7 +247,7 @@ class HardGame extends Component {
               <button onClick={this.restartGame}>Restart Game</button>
               <div className="leaderboards">
                 <div className="leaderboard">
-                  <h2>Leaderboard (Hard)</h2>
+                  <h2>Leaderboard (Easy)</h2>
                   <table className="leaderboard">
                     <thead>
                       <tr>
@@ -245,7 +256,7 @@ class HardGame extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      {leaderboardHard.map((entry, index) => (
+                      {leaderboardEasy.map((entry, index) => (
                         <tr key={index}>
                           <td>{entry.playerName}</td>
                           <td>{entry.score}</td>
@@ -263,5 +274,4 @@ class HardGame extends Component {
   }
 }
 
-export default HardGame;
-
+export default EasyGame;
