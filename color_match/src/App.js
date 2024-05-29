@@ -32,30 +32,33 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
+      <div>
         {!showGame && (
-          <div className="difficulty-select">
-            <header className="App-header">
-            <h1>Color Matching Game</h1>
-            </header>
-            <br></br><br></br><br></br>
-            <br></br><br></br><br></br>
-            <label>
-              Select Difficulty:
-              <select value={difficulty} onChange={handleDifficultyChange}>
-                <option value="easy">Easy</option>
-                <option value="normal">Normal</option>
-                <option value="hard">Hard</option>
-              </select>
-            </label>
-            <button onClick={handleShowGame}>Start Game</button>
+          <div className='App'>
+            <div className='difficultySelect'>
+              <header className='App-header'>
+                <h1 >Color Matching Game</h1>
+              </header>
+              <br></br><br></br><br></br>
+              <br></br><br></br><br></br>
+              <label>
+                Select Difficulty:
+                <select value={difficulty} onChange={handleDifficultyChange}>
+                  <option value="easy">Easy</option>
+                  <option value="normal">Normal</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </label>
+              <br></br>
+              <button onClick={handleShowGame}>Start Game</button>
+            </div>
           </div>
         )}
         {showGame && (
           <main>  
             {selectedGame}
             <Link to="/">
-              <button onClick={() => setShowGame(false)}>Home</button>
+              <button className='Home' onClick={() => setShowGame(false)}>Home</button>
             </Link>
           </main>
         )}
