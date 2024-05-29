@@ -1,60 +1,30 @@
 import React, { Component } from 'react';
 import { db } from './firebaseConfig';
 import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
-// 分裝網頁顯示內容(新增內容)
-import GameStart from './Game_start';
-import GameEnd from './Game_end';
-import GameEasy from './Game_easy';
-import GameNormal from './Game_normal';
-import GameHard from './Game_hard';
 
-class Game extends Component {
-  
+
+class EasyGame extends Component {
   constructor(props) {
     super(props);
     this.state = {
       gameStarted: false,
       targetColor: '',
-      playerName: '', 
+      playerName: '',
       gameOver: false,
       score: 0,
       timeLeft: 5, // 5秒倒數
       leaderboardEasy: [],
-      leaderboardNormal: [],
-      leaderboardHard: [], 
-      difficulty: 'easy' // 添加難度狀態(新增內容)
+      difficulty: this.props.difficulty || 'easy', // 使用傳遞的難度
     };
     this.existingPositions = [];
   }
 
-  // 在應用程序啟動時調用(新增內容)
-  componentDidMount() { 
+  componentDidMount() {
     // 從本地存儲中加載排行榜數據
     const storedLeaderboardEasy = localStorage.getItem('leaderboardEasy');
-    const storedLeaderboardNormal = localStorage.getItem('leaderboardNormal');
-    const storedLeaderboardHard = localStorage.getItem('leaderboardHard');
     if (storedLeaderboardEasy) {
       this.setState({ leaderboardEasy: JSON.parse(storedLeaderboardEasy) });
     }
-    if (storedLeaderboardNormal) {
-      this.setState({ leaderboardNormal: JSON.parse(storedLeaderboardNormal) });
-    }
-    if (storedLeaderboardHard) {
-      this.setState({ leaderboardHard: JSON.parse(storedLeaderboardHard) });
-    }
-  }  
-  
-  // 重置排行榜數據(新增內容)
-  resetScores = async () => {
-    const allScoresSnapshot = await getDocs(collection(db, 'gameScores'));
-    allScoresSnapshot.forEach(async (scoreDoc) => {
-      await deleteDoc(doc(db, 'gameScores', scoreDoc.id));
-    });
-    this.setState({
-      leaderboardEasy: [],
-      leaderboardNormal: [],
-      leaderboardHard: []
-    });
   }
 
   // 保存分數(調整後)
@@ -67,7 +37,7 @@ class Game extends Component {
       console.error('Error adding document: ', error);
     }
   }
-  
+
   // 更新排行榜(調整後)
   updateLeaderboard = async (difficulty) => {
     const scoresQuery = query(collection(db, 'gameScores'), orderBy('score', 'desc'));
@@ -86,8 +56,7 @@ class Game extends Component {
       this.setState({ leaderboardHard: topScores });
       localStorage.setItem('leaderboardHard', JSON.stringify(topScores)); // 保存到本地存儲
     }
-  
-  
+
     if (allScores.length > 5) {
       const scoresToDelete = allScores.filter(score => !topScores.includes(score));
       scoresToDelete.forEach(async (scoreDoc) => {
@@ -95,7 +64,6 @@ class Game extends Component {
       });
     }
   }
-  
 
   tick = () => {
     const { gameStarted, timeLeft } = this.state;
@@ -112,7 +80,7 @@ class Game extends Component {
   }
 
   selectDifficulty = (difficulty) => {
-     this.setState({ difficulty })
+    this.setState({ difficulty });
   }
 
   startGame = () => {
@@ -143,15 +111,15 @@ class Game extends Component {
     this.setState({
       gameStarted: false,
       targetColor: '',
-      playerName: '', 
+      playerName: '',
       gameOver: false,
       score: 0,
       timeLeft: 5, // 5秒倒數
-      difficulty: 'easy' // 重新設置難度
+      difficulty: 'easy', // 重新設置難度
     });
     this.existingPositions = [];
   }
-  
+
   getRandomColor = () => {
     const r = Math.floor(Math.random() * 256);
     const g = Math.floor(Math.random() * 256);
@@ -162,14 +130,14 @@ class Game extends Component {
   getRandomPosition = () => {
     const blockSize = 80; // 方塊大小
     const edge_length = 490; // 方塊邊長(根據需要調整)
-    
+
     let isValidPosition = false;
     let top, left;
 
     const generatePosition = () => {
       top = Math.floor(Math.random() * (edge_length)) + 20;
       left = Math.floor(Math.random() * (edge_length)) + 365;
-  
+
       isValidPosition = this.existingPositions.every(position => {
         const { top: existingTop, left: existingLeft } = position;
         return (
@@ -180,21 +148,21 @@ class Game extends Component {
         );
       });
     };
-  
+
     generatePosition();
-  
+
     while (!isValidPosition) {
       generatePosition();
     }
-  
+
     this.existingPositions.push({ top, left });
-  
+
     return {
       position: 'absolute',
       top: `${top}px`,
       left: `${left}px`,
       width: `${blockSize}px`,
-      height: `${blockSize}px`
+      height: `${blockSize}px`,
     };
   }
 
@@ -204,7 +172,7 @@ class Game extends Component {
       top: `${top}px`,
       left: `${left}px`,
       width: `${blockSize}px`,
-      height: `${blockSize}px`
+      height: `${blockSize}px`,
     };
   }
 
@@ -216,7 +184,7 @@ class Game extends Component {
       this.setState(prevState => ({
         targetColor: this.getRandomColor(),
         score: prevState.score + 1,
-        timeLeft: 5 // 重新設置倒數時間
+        timeLeft: 5, // 重新設置倒數時間
       }));
       this.existingPositions = [];
     } else {
@@ -226,137 +194,84 @@ class Game extends Component {
   }
 
   render() {
-    
-    const { gameStarted, targetColor, gameOver, score, timeLeft, playerName, difficulty, leaderboardEasy, leaderboardNormal, leaderboardHard } = this.state;
-    
-    // 根據難度選擇不同的遊戲組件(新增內容)
-    
-    let gameComponent;
-    if (gameStarted && !gameOver) {
-      if(this.state.difficulty === 'easy') {
-        gameComponent = (
-          <GameEasy
-          gameStarted={gameStarted}
-          gameOver={gameOver}
-          targetColor={targetColor}
-          timeLeft={timeLeft}
-          score={score}
-          handleBlockClick={this.handleBlockClick}
-          getRandomPosition={this.getRandomPosition}
-          getRandomColor={this.getRandomColor}
-          getPosition={this.getPosition}
-          />
-        );
-      }else if(this.state.difficulty === 'normal') {
-          gameComponent = (
-            <GameNormal
-            gameStarted={gameStarted}
-            gameOver={gameOver}
-            targetColor={targetColor}
-            timeLeft={timeLeft}
-            score={score}
-            handleBlockClick={this.handleBlockClick}
-            getRandomPosition={this.getRandomPosition}
-            getRandomColor={this.getRandomColor}
-            getPosition={this.getPosition}
-            />
-          );
-      }else if(this.state.difficulty === 'hard') {
-          gameComponent = (
-            <GameHard
-            gameStarted={gameStarted}
-            gameOver={gameOver}
-            targetColor={targetColor}
-            timeLeft={timeLeft}
-            score={score}
-            handleBlockClick={this.handleBlockClick}
-            getRandomPosition={this.getRandomPosition}
-            getRandomColor={this.getRandomColor}
-            getPosition={this.getPosition}
-            />
-          );
-      }
-    }
-    let leaderboard;
-    // 根據難度選擇不同的排行榜(新增內容)
-    if (difficulty === 'easy') {
-      leaderboard = leaderboardEasy;
-    } else if (difficulty === 'normal') {
-      leaderboard = leaderboardNormal;
-    } else if (difficulty === 'hard') {
-      leaderboard = leaderboardHard;
-    }
-
-
-
+    const { gameStarted, targetColor, gameOver, score, timeLeft, playerName, leaderboardEasy } = this.state;
     return (
-      // 分裝網頁顯示內容(新增內容)
       <div>
-        {/*開始頁面(調整後)*/}
         {gameStarted === false && (
-          <GameStart 
-          playerName={playerName} 
-          handleNameChange={this.handleNameChange} 
-          startGame={this.startGame}
-          selectDifficulty={this.selectDifficulty} 
-          difficulty={difficulty}
-          />
+          <div>
+            <header className="App-header">
+              <h1>Color Matching Game</h1>
+            </header>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <div className='start_end'>
+              <input
+                type="text"
+                value={playerName}
+                onChange={this.handleNameChange}
+                placeholder="Enter your name"
+              />
+              <button onClick={this.startGame}>Start Game</button>
+            </div>
+          </div>
         )}
+        {gameStarted && gameOver === false && (
+          <div>
+            <h2>Time Left: {timeLeft}</h2>
+            <h2>Score: {score}</h2>
+            <h2>targetColor : </h2>
+            <div style={{ backgroundColor: 'black', ...this.getPosition(17, 362, 576) }}></div>
+            <div style={{ backgroundColor: 'lightcyan', ...this.getPosition(20, 365, 570) }}></div>
+            <div style={{ backgroundColor: targetColor, ...this.getPosition(215, 13, 80) }}></div>
+            <div style={{ backgroundColor: targetColor, ...this.getRandomPosition() }} onClick={() => this.handleBlockClick(targetColor)}></div>
 
-        {/*遊戲介面(新增內容)*/}
-        {gameComponent}
-        
-        {/*結束頁面(調整後)*/}
+            <div style={{ backgroundColor: this.getRandomColor(), ...this.getRandomPosition() }} onClick={() => this.handleBlockClick()}></div>
+          </div>
+        )}
         {gameOver && (
           <div>
-          <header className="App-header">
-            <h1>Color Matching Game</h1>
-          </header>
-          <div className='start_end'>
-            <input 
-              type="text" 
-              value={playerName} 
-              onChange={handleNameChange} 
-              placeholder="Enter your name" 
-            />
-            <h2>Select Difficulty:</h2>
-            <div className='difficulty-labels'>
-              <label className='difficulty-label'>
-                <input 
-                  type="radio" 
-                  name="difficulty" 
-                  defaultChecked
-                  value="easy"
-                  onChange={() => selectDifficulty("easy")}
-                />
-                Easy
-              </label>
-              <label className='difficulty-label'>
-                <input 
-                  type="radio" 
-                  name="difficulty" 
-                  value="normal" 
-                  onChange={() => selectDifficulty("normal")}
-                />
-                Normal
-              </label>
-              <label className='difficulty-label'>
-                <input 
-                  type="radio" 
-                  name="difficulty" 
-                  value="hard" 
-                  onChange={() => selectDifficulty("hard")}
-                />
-                Hard
-              </label>
+            <header className="App-header">
+              <h1>Color Matching Game</h1>
+            </header>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <div className='start_end'>
+              <h2 className='game-over-message'>Game Over!</h2>
+              <div>Final Score for {playerName}: {score}</div>
+              <button onClick={this.restartGame}>Restart Game</button>
+              <div className="leaderboards">
+                <div className="leaderboard">
+                  <h2>Leaderboard (Easy)</h2>
+                  <table className="leaderboard">
+                    <thead>
+                      <tr>
+                        <th>Player</th>
+                        <th>Score</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {leaderboardEasy.map((entry, index) => (
+                        <tr key={index}>
+                          <td>{entry.playerName}</td>
+                          <td>{entry.score}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
-            <button onClick={startGame}>Start Game</button>
           </div>
-        </div>
         )}
       </div>
     );
   }
 }
 
-export default Game;
+export default EasyGame;
