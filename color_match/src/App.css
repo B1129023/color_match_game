@@ -1,12 +1,7 @@
 /* App.css */
 
 /* 設置body和html的高度和寬度 */
-body, html {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  overflow: hidden; /* 隱藏滾動條 */
-}
+
 
 
 
@@ -20,17 +15,18 @@ body, html {
 }
 
 .App-header {
-  background-color: #282c34; /* 標題列背景顏色 */
-  position: absolute;
-  left: 0;
-  right: 0;
-  min-height: 10vh; /* 標題列最小高度 */
-  display: flex;
-  flex-direction: column; 
-  align-items: center; /* 對齊標題列內容 */
-  justify-content: center; 
-  font-size: calc(10px + 2vmin); /* 計算字體大小 */
   color: white; /* 文字顏色 */
+  background-color:#444140;
+  padding: 16px 0 16px 24px;
+  border-left: 8px solid #00749C;
+  color: #ffff !important;
+  height: 5vh;
+  font-size: calc(10px + 2vmin); /* 計算字體大小 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  z-index: 100
 }
 
 /* ---------------------------------------- */

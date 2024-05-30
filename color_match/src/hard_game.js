@@ -12,7 +12,7 @@ class EasyGame extends Component {
       playerName: '',
       gameOver: false,
       score: 0,
-      timeLeft: 5, // 5秒倒數
+      timeLeft: 3, // 5秒倒數
       leaderboardEasy: [],
       difficulty: this.props.difficulty || 'easy', // 使用傳遞的難度
     };
@@ -95,7 +95,7 @@ class EasyGame extends Component {
       gameOver: false,
       score: 0,
       targetColorName: targetColor,
-      timeLeft: 5, // 重新設置倒數時間
+      timeLeft: 3, // 重新設置倒數時間
     });
   }
 
@@ -114,7 +114,7 @@ class EasyGame extends Component {
       playerName: '',
       gameOver: false,
       score: 0,
-      timeLeft: 5, // 5秒倒數
+      timeLeft: 3, // 5秒倒數
       difficulty: 'easy', // 重新設置難度
     });
     this.existingPositions = [];
@@ -184,7 +184,7 @@ class EasyGame extends Component {
       this.setState(prevState => ({
         targetColor: this.getRandomColor(),
         score: prevState.score + 1,
-        timeLeft: 5, // 重新設置倒數時間
+        timeLeft: 3, // 重新設置倒數時間
       }));
       this.existingPositions = [];
     } else {
@@ -202,11 +202,6 @@ class EasyGame extends Component {
             <header className="App-header">
               <h1>Color Matching Game</h1>
             </header>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
             <div className='start_end'>
               <input
                 type="text"
@@ -227,7 +222,9 @@ class EasyGame extends Component {
             <div style={{ backgroundColor: 'lightcyan', ...this.getPosition(20, 365, 570) }}></div>
             <div style={{ backgroundColor: targetColor, ...this.getPosition(215, 13, 80) }}></div>
             <div style={{ backgroundColor: targetColor, ...this.getRandomPosition() }} onClick={() => this.handleBlockClick(targetColor)}></div>
-
+            <div style={{ backgroundColor: this.getRandomColor(), ...this.getRandomPosition() }} onClick={() => this.handleBlockClick()}></div>
+            <div style={{ backgroundColor: this.getRandomColor(), ...this.getRandomPosition() }} onClick={() => this.handleBlockClick()}></div>
+            <div style={{ backgroundColor: this.getRandomColor(), ...this.getRandomPosition() }} onClick={() => this.handleBlockClick()}></div>
             <div style={{ backgroundColor: this.getRandomColor(), ...this.getRandomPosition() }} onClick={() => this.handleBlockClick()}></div>
           </div>
         )}
@@ -236,18 +233,13 @@ class EasyGame extends Component {
             <header className="App-header">
               <h1>Color Matching Game</h1>
             </header>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
             <div className='start_end'>
               <h2 className='game-over-message'>Game Over!</h2>
               <div>Final Score for {playerName}: {score}</div>
               <button onClick={this.restartGame}>Restart Game</button>
               <div className="leaderboards">
                 <div className="leaderboard">
-                  <h2>Leaderboard (Easy)</h2>
+                  <h2>Leaderboard (Hard)</h2>
                   <table className="leaderboard">
                     <thead>
                       <tr>

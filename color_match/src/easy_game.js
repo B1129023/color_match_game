@@ -69,7 +69,7 @@ class EasyGame extends Component {
     const { gameStarted, timeLeft } = this.state;
     this.existingPositions = [];
     if (gameStarted && timeLeft > 0) {
-      this.setState(prevState => ({ timeLeft: prevState.timeLeft - 1 }));
+      this.setState(prevState => ({ timeLeft: prevState.timeLeft }));
     } else if (gameStarted && timeLeft === 0) {
       this.endGame();
     }
@@ -202,11 +202,6 @@ class EasyGame extends Component {
             <header className="App-header">
               <h1>Color Matching Game</h1>
             </header>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
             <div className='start_end'>
               <input
                 type="text"
@@ -227,7 +222,7 @@ class EasyGame extends Component {
             <div style={{ backgroundColor: 'lightcyan', ...this.getPosition(20, 365, 570) }}></div>
             <div style={{ backgroundColor: targetColor, ...this.getPosition(215, 13, 80) }}></div>
             <div style={{ backgroundColor: targetColor, ...this.getRandomPosition() }} onClick={() => this.handleBlockClick(targetColor)}></div>
-
+            <div style={{ backgroundColor: this.getRandomColor(), ...this.getRandomPosition() }} onClick={() => this.handleBlockClick()}></div>
             <div style={{ backgroundColor: this.getRandomColor(), ...this.getRandomPosition() }} onClick={() => this.handleBlockClick()}></div>
           </div>
         )}
@@ -236,11 +231,6 @@ class EasyGame extends Component {
             <header className="App-header">
               <h1>Color Matching Game</h1>
             </header>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
             <div className='start_end'>
               <h2 className='game-over-message'>Game Over!</h2>
               <div>Final Score for {playerName}: {score}</div>
