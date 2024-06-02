@@ -179,16 +179,17 @@ class EasyGame extends Component {
   handleBlockClick = (clickedColor) => {
     const { targetColor } = this.state;
     if (clickedColor === targetColor) {
-      clearInterval(this.timerID);
-      this.timerID = setInterval(this.tick, 1000); // 每秒更新一次時間
       this.setState(prevState => ({
         targetColor: this.getRandomColor(),
         score: prevState.score + 1,
       }));
       this.existingPositions = [];
     } else {
-      // 直接呼叫endGame()結束遊戲，避免時間倒數到0時再次呼叫endGame()，造成分數重複計算(調整後)
-      this.endGame();
+      this.setState(prevState => ({
+        targetColor: this.getRandomColor(),
+        score: prevState.score,
+      }));
+      this.existingPositions = [];
     }
   }
 
@@ -239,7 +240,7 @@ class EasyGame extends Component {
               <button onClick={this.restartGame}>Restart Game</button>
               <div className="leaderboards">
                 <div className="leaderboard">
-                  <h2>Leaderboard (Normal)</h2>
+                  <h2>Leaderboard (Timed-Limited)</h2>
                   <table className="leaderboard">
                     <thead>
                       <tr>
