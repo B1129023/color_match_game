@@ -12,7 +12,7 @@ class EasyGame extends Component {
       playerName: '',
       gameOver: false,
       score: 0,
-      timeLeft: 5, // 5秒倒數
+      timeLeft: 30, // 5秒倒數
       leaderboardEasy: [],
       difficulty: this.props.difficulty || 'easy', // 使用傳遞的難度
     };
@@ -31,7 +31,7 @@ class EasyGame extends Component {
   saveScore = async () => {
     const { playerName, score, difficulty } = this.state;
     try {
-      await addDoc(collection(db, 'normal_gameScores'), { playerName, score, difficulty });
+      await addDoc(collection(db, 'timed_gameScores'), { playerName, score, difficulty });
       this.updateLeaderboard(difficulty);
     } catch (error) {
       console.error('Error adding document: ', error);
@@ -40,7 +40,7 @@ class EasyGame extends Component {
 
   // 更新排行榜(調整後)
   updateLeaderboard = async (difficulty) => {
-    const scoresQuery = query(collection(db, 'normal_gameScores'), orderBy('score', 'desc'));
+    const scoresQuery = query(collection(db, 'timed_gameScores'), orderBy('score', 'desc'));
     const querySnapshot = await getDocs(scoresQuery);
     const allScores = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     const filteredScores = allScores.filter(score => score.difficulty === difficulty);
@@ -60,7 +60,7 @@ class EasyGame extends Component {
     if (allScores.length > 5) {
       const scoresToDelete = allScores.filter(score => !topScores.includes(score));
       scoresToDelete.forEach(async (scoreDoc) => {
-        await deleteDoc(doc(db, 'normal_gameScores', scoreDoc.id));
+        await deleteDoc(doc(db, 'timed_gameScores', scoreDoc.id));
       });
     }
   }
@@ -95,7 +95,7 @@ class EasyGame extends Component {
       gameOver: false,
       score: 0,
       targetColorName: targetColor,
-      timeLeft: 5, // 重新設置倒數時間
+      timeLeft: 30, // 重新設置倒數時間
     });
   }
 
@@ -114,7 +114,7 @@ class EasyGame extends Component {
       playerName: '',
       gameOver: false,
       score: 0,
-      timeLeft: 5, // 5秒倒數
+      timeLeft: 30, // 5秒倒數
       difficulty: 'easy', // 重新設置難度
     });
     this.existingPositions = [];
@@ -184,7 +184,6 @@ class EasyGame extends Component {
       this.setState(prevState => ({
         targetColor: this.getRandomColor(),
         score: prevState.score + 1,
-        timeLeft: 5, // 重新設置倒數時間
       }));
       this.existingPositions = [];
     } else {
@@ -203,7 +202,7 @@ class EasyGame extends Component {
               <h1>Color Matching Game</h1>
             </header>
             <div className='start_end'>
-            <h1>Normal Mode</h1>
+            <h1>Time-Limited Mode</h1>
               <input
                 type="text"
                 value={playerName}
@@ -223,6 +222,8 @@ class EasyGame extends Component {
             <div style={{ backgroundColor: 'lightcyan', ...this.getPosition(20, 365, 570) }}></div>
             <div style={{ backgroundColor: targetColor, ...this.getPosition(215, 13, 80) }}></div>
             <div style={{ backgroundColor: targetColor, ...this.getRandomPosition() }} onClick={() => this.handleBlockClick(targetColor)}></div>
+            <div style={{ backgroundColor: this.getRandomColor(), ...this.getRandomPosition() }} onClick={() => this.handleBlockClick()}></div>
+            <div style={{ backgroundColor: this.getRandomColor(), ...this.getRandomPosition() }} onClick={() => this.handleBlockClick()}></div>
             <div style={{ backgroundColor: this.getRandomColor(), ...this.getRandomPosition() }} onClick={() => this.handleBlockClick()}></div>
             <div style={{ backgroundColor: this.getRandomColor(), ...this.getRandomPosition() }} onClick={() => this.handleBlockClick()}></div>
           </div>

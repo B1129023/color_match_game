@@ -192,6 +192,7 @@ class HardGame extends Component {
             <br></br>
             <br></br>
             <div className='start_end'>
+            <h1>Hard Mode</h1>
               <input
                 type="text"
                 value={playerName}

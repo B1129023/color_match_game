@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './App.css';
-import { BrowserRouter as Router, Link } from 'react-router-dom';
 
 // 導入所有遊戲組件
 import EasyGame from './easy_game';
 import NormalGame from './normal_game';
 import HardGame from './hard_game';
+import TimedGame from './timed_game'; // 新的限時模式遊戲組件
 
 function App() {
   const [difficulty, setDifficulty] = useState('easy');
@@ -20,14 +21,21 @@ function App() {
   };
 
   let selectedGame;
-  if (showGame) {
-    if (difficulty === 'easy') {
+  switch (difficulty) {
+    case 'easy':
       selectedGame = <EasyGame />;
-    } else if (difficulty === 'normal') {
+      break;
+    case 'normal':
       selectedGame = <NormalGame />;
-    } else if (difficulty === 'hard') {
+      break;
+    case 'hard':
       selectedGame = <HardGame />;
-    }
+      break;
+    case 'timed':
+      selectedGame = <TimedGame />;
+      break;
+    default:
+      selectedGame = null;
   }
 
   return (
@@ -39,8 +47,7 @@ function App() {
               <header className='App-header'>
                 <h1>Color Matching Game</h1>
               </header>
-              <br></br><br></br><br></br>
-              <br></br><br></br><br></br>
+              <br />
               <div>
                 <label htmlFor="easy">
                   <input
@@ -49,7 +56,6 @@ function App() {
                     name="difficulty"
                     value="easy"
                     checked={difficulty === 'easy'}
-                    defaultChecked
                     onChange={handleDifficultyChange}
                   />
                   Easy
@@ -76,9 +82,20 @@ function App() {
                   />
                   Hard
                 </label>
+                <label htmlFor="timed">
+                  <input
+                    type="radio"
+                    id="timed"
+                    name="difficulty"
+                    value="timed"
+                    checked={difficulty === 'timed'}
+                    onChange={handleDifficultyChange}
+                  />
+                  Timed-Limited
+                </label>
               </div>
-              <br></br>
-              <button onClick={handleShowGame}>Start Game</button>
+              <br />
+              <button onClick={handleShowGame}>Select Difficulty</button>
             </div>
           </div>
         )}

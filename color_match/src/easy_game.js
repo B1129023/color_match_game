@@ -203,6 +203,7 @@ class EasyGame extends Component {
               <h1>Color Matching Game</h1>
             </header>
             <div className='start_end'>
+            <h1>Easy Mode</h1>
               <input
                 type="text"
                 value={playerName}
